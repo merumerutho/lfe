@@ -1,0 +1,92 @@
+# Makefile_arm — NDS build for the LFE (Lightweight Fixed-point Engine) library.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Builds liblfe.a with devkitARM for the Nintendo DS ARM9. Called by
+# the top-level maxtracker Makefile when LFE_ENABLED=1. Produces the
+# same logical artifact as the host Makefile (build/liblfe.a) but in
+# a separate output directory so the two builds don't collide.
+#
+# This file does not include any libnds headers and does not link
+# against any NDS library — the lfe library itself is portable C and
+# only needs an ARM cross-compiler. The output liblfe.a is then linked
+# into maxtracker by arm9/Makefile.
+#
+# Targets:
+#
+#   make -f Makefile.nds         — build liblfe.a for NDS ARM9
+#   make -f Makefile.nds clean   — remove NDS build artifacts
+
+ifeq ($(strip $(DEVKITARM)),)
+$(error "Please set DEVKITARM in your environment.")
+endif
+
+# Use the same compile flags as arm9/Makefile so the .a file is
+# link-compatible with the rest of the maxtracker arm9 build.
+CC      := $(DEVKITARM)/bin/arm-none-eabi-gcc
+AR      := $(DEVKITARM)/bin/arm-none-eabi-ar
+
+ARCH    := -mthumb -mthumb-interwork
+CFLAGS  := -g -Wall -Wextra -O2 \
+           -march=armv5te -mtune=arm946e-s -fomit-frame-pointer \
+           -ffast-math \
+           $(ARCH) \
+           -std=c99 \
+           -Iinclude -Isrc
+
+# Library sources (mirror of host Makefile).
+SRCS := \
+    src/lfe.c \
+    src/util/wavetable.c \
+    src/util/dbmath.c \
+    src/util/envelope.c \
+    src/util/lfo.c \
+    src/util/noise.c \
+    src/util/filter.c \
+    src/util/biquad.c \
+    src/util/crossover.c \
+    src/util/env_follower.c \
+    src/gen/gen_test_tone.c \
+    src/gen/gen_drawn.c \
+    src/gen/gen_drum.c \
+    src/gen/gen_synth.c \
+    src/gen/gen_fm4.c \
+    src/gen/braids/lfe_braids_random.c \
+    src/gen/braids/lfe_braids_resources.c \
+    src/gen/braids/lfe_braids_analog.c \
+    src/gen/braids/lfe_braids_digital.c \
+    src/gen/braids/lfe_braids_macro.c \
+    src/gen/gen_braids.c \
+    src/fx/fx_distortion.c \
+    src/fx/fx_filter.c \
+    src/fx/fx_delay.c \
+    src/fx/fx_env_shaper.c \
+    src/fx/fx_normalize.c \
+    src/fx/fx_ott.c \
+    src/fx/fx_reverse.c \
+    src/fx/fx_bitcrush.c
+
+# Separate output directory so the host and NDS builds don't collide.
+BUILD := build_nds
+
+OBJS := $(patsubst %.c,$(BUILD)/%.o,$(SRCS))
+
+LIB := $(BUILD)/liblfe.a
+
+.PHONY: all clean
+
+all: $(LIB)
+
+$(LIB): $(OBJS)
+	@mkdir -p $(dir $@)
+	@echo "  AR      $(notdir $@)"
+	@$(AR) rcs $@ $^
+
+$(BUILD)/%.o: %.c
+	@mkdir -p $(dir $@)
+	@echo "  CC      $<"
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+clean:
+	@rm -rf $(BUILD)
+	@echo "  CLEAN   lib/lfe (nds)"

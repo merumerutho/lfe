@@ -1,0 +1,6 @@
+build/
+build_nds/
+test/output/
+*.o
+*.a
+*.d
