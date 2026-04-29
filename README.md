@@ -87,6 +87,13 @@ designed by Emilie Gillet. Original source released under GPLv3.
 The Calvario oscillator-combine mode in the synth generator is based on
 [Calvario](https://github.com/HydrangeaSystems/Calvario) by Hydrangea Systems.
 
+The OTT multiband compressor effect (`src/fx/fx_ott.c`) is inspired by
+[OTT](https://xferrecords.com/freeware) by Steve Duda / Xfer Records.
+
+Biquad filter coefficients (`src/util/biquad.c`) are derived from the
+[Audio EQ Cookbook](https://www.w3.org/2011/audio/audio-eq-cookbook.html)
+by Robert Bristow-Johnson.
+
 ## Licensing
 
 LFE is **GPL-3.0-or-later**. See the `LICENSE` file for the full text.
