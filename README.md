@@ -84,6 +84,9 @@ The Braids generator (`src/gen/braids/`) is a fixed-point port of
 algorithms from [Mutable Instruments Braids](https://mutable-instruments.net/),
 designed by Emilie Gillet. Original source released under GPLv3.
 
+The Calvario oscillator-combine mode in the synth generator is based on
+[Calvario](https://github.com/HydrangeaSystems/Calvario) by Hydrangea Systems.
+
 ## Licensing
 
 LFE is **GPL-3.0-or-later**. See the `LICENSE` file for the full text.
